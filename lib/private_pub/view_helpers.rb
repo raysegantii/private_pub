@@ -13,8 +13,8 @@ module PrivatePub
     # some JavaScript calling PrivatePub.sign with the subscription
     # options.
     def subscribe_to(channel)
-      subscription = PrivatePub.subscription(:channel => channel)
-      content_tag "script", :type => "text/javascript" do
+      subscription = PrivatePub.subscription(channel: channel)
+      content_tag "script", type: "text/javascript" do
         raw("PrivatePub.sign(#{subscription.to_json});")
       end
     end

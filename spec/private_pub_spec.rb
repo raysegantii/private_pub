@@ -34,7 +34,7 @@ describe PrivatePub do
 
   it "includes channel, server, and custom time in subscription" do
     PrivatePub.config[:server] = "server"
-    subscription = PrivatePub.subscription(:timestamp => 123, :channel => "hello")
+    subscription = PrivatePub.subscription(timestamp: 123, channel: "hello")
     subscription[:timestamp].should eq(123)
     subscription[:channel].should eq("hello")
     subscription[:server].should eq("server")
@@ -42,30 +42,30 @@ describe PrivatePub do
 
   it "does a sha1 digest of channel, timestamp, and secret token" do
     PrivatePub.config[:secret_token] = "token"
-    subscription = PrivatePub.subscription(:timestamp => 123, :channel => "channel")
+    subscription = PrivatePub.subscription(timestamp: 123, channel: "channel")
     subscription[:signature].should eq(Digest::SHA1.hexdigest("tokenchannel123"))
   end
 
   it "formats a message hash given a channel and a string for eval" do
     PrivatePub.config[:secret_token] = "token"
     PrivatePub.message("chan", "foo").should eq(
-      :ext => {:private_pub_token => "token"},
-      :channel => "chan",
-      :data => {
-        :channel => "chan",
-        :eval => "foo"
+      ext: {private_pub_token: "token"},
+      channel: "chan",
+      data: {
+        channel: "chan",
+        eval: "foo"
       }
     )
   end
 
   it "formats a message hash given a channel and a hash" do
     PrivatePub.config[:secret_token] = "token"
-    PrivatePub.message("chan", :foo => "bar").should eq(
-      :ext => {:private_pub_token => "token"},
-      :channel => "chan",
-      :data => {
-        :channel => "chan",
-        :data => {:foo => "bar"}
+    PrivatePub.message("chan", foo: "bar").should eq(
+      ext: {private_pub_token: "token"},
+      channel: "chan",
+      data: {
+        channel: "chan",
+        data: {foo: "bar"}
       }
     )
   end

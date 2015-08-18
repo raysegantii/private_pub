@@ -35,7 +35,7 @@ module PrivatePub
       url = URI.parse(config[:server])
 
       form = Net::HTTP::Post.new(url.path.empty? ? '/' : url.path)
-      form.set_form_data(:message => message.to_json)
+      form.set_form_data(message: message.to_json)
 
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = url.scheme == "https"
@@ -44,7 +44,7 @@ module PrivatePub
 
     # Returns a message hash for sending to Faye
     def message(channel, data)
-      message = {:channel => channel, :data => {:channel => channel}, :ext => {:private_pub_token => config[:secret_token]}}
+      message = {channel: channel, data: {channel: channel}, ext: {private_pub_token: config[:secret_token]}}
       if data.kind_of? String
         message[:data][:eval] = data
       else
@@ -56,7 +56,7 @@ module PrivatePub
     # Returns a subscription hash to pass to the PrivatePub.sign call in JavaScript.
     # Any options passed are merged to the hash.
     def subscription(options = {})
-      sub = {:server => config[:server], :timestamp => (Time.now.to_f * 1000).round}.merge(options)
+      sub = {server: config[:server], timestamp: (Time.now.to_f * 1000).round}.merge(options)
       sub[:signature] = Digest::SHA1.hexdigest([config[:secret_token], sub[:channel], sub[:timestamp]].join)
       sub
     end
@@ -69,7 +69,7 @@ module PrivatePub
     # Returns the Faye Rack application.
     # Any options given are passed to the Faye::RackAdapter.
     def faye_app(options = {})
-      options = {:mount => "/faye", :timeout => 45, :extensions => [FayeExtension.new]}.merge(options)
+      options = {mount: "/faye", timeout: 45, extensions: [FayeExtension.new]}.merge(options)
       Faye::RackAdapter.new(options)
     end
   end

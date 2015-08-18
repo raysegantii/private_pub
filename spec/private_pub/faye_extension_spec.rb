@@ -16,7 +16,7 @@ describe PrivatePub::FayeExtension do
   end
 
   it "has no error when the signature matches the subscription" do
-    sub = PrivatePub.subscription(:channel => "hello")
+    sub = PrivatePub.subscription(channel: "hello")
     @message["subscription"] = sub[:channel]
     @message["ext"]["private_pub_signature"] = sub[:signature]
     @message["ext"]["private_pub_timestamp"] = sub[:timestamp]
@@ -26,7 +26,7 @@ describe PrivatePub::FayeExtension do
 
   it "has an error when signature just expired" do
     PrivatePub.config[:signature_expiration] = 1
-    sub = PrivatePub.subscription(:timestamp => 123, :channel => "hello")
+    sub = PrivatePub.subscription(timestamp: 123, channel: "hello")
     @message["subscription"] = sub[:channel]
     @message["ext"]["private_pub_signature"] = sub[:signature]
     @message["ext"]["private_pub_timestamp"] = sub[:timestamp]
@@ -46,7 +46,7 @@ describe PrivatePub::FayeExtension do
     @message["channel"] = "/custom/channel"
     @message["ext"]["private_pub_token"] = "bad"
     lambda {
-      message = @faye.incoming(@message, lambda { |m| m })
+      @faye.incoming(@message, lambda { |m| m })
     }.should raise_error("No secret_token config set, ensure private_pub.yml is loaded properly.")
   end
 
