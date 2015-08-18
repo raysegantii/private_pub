@@ -7,18 +7,27 @@ function buildPrivatePub(doc) {
     subscriptionObjects: {},
     subscriptionCallbacks: {},
 
-    faye: function(callback) {
+    faye: function(callback, async) {
       if (self.fayeClient) {
         callback(self.fayeClient);
       } else {
         self.fayeCallbacks.push(callback);
         if (self.subscriptions.server && !self.connecting) {
           self.connecting = true;
-          var script = doc.createElement("script");
-          script.type = "text/javascript";
-          script.src = self.subscriptions.server + ".js";
-          script.onload = self.connectToFaye;
-          doc.documentElement.appendChild(script);
+          url = self.subscriptions.server + ".js";
+          if (jQuery && async) {
+            jQuery.ajax({
+              url: url,
+              dataType: 'script',
+              cache: true
+            }).done(self.connectToFaye);
+          } else {
+            var script = doc.createElement("script");
+            script.type = "text/javascript";
+            script.src = url;
+            script.onload = self.connectToFaye;
+            doc.documentElement.appendChild(script);
+          }
         }
       }
     },
@@ -55,7 +64,7 @@ function buildPrivatePub(doc) {
         if (options.subscription) {
           options.subscription(sub);
         }
-      });
+      }, options.async);
     },
 
     handleResponse: function(message) {
